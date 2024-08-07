@@ -9,6 +9,7 @@ function ProductCard({ product, toggleCart }) {
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
+    e.preventDefault();
     await addItemToCart({
       variables: {
         productId: product.pid,
