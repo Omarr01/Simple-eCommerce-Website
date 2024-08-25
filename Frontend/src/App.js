@@ -5,82 +5,81 @@ import ProductDetails from "./components/ProductDetails";
 import Header from "./components/Header";
 import Cart from "./components/Cart";
 
-function App() {
-  const [isCartOpen, setIsCartOpen] = React.useState(false);
-  const [totalQuantity, setTotalQuantity] = React.useState(0);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isCartOpen: false,
+      totalQuantity: 0,
+    };
+  }
 
-  const toggleCart = () => {
-    setIsCartOpen((prevState) => !prevState);
+  toggleCart = () => {
+    this.setState((prevState) => ({
+      isCartOpen: !prevState.isCartOpen,
+    }));
   };
 
-  React.useEffect(() => {
-    if (isCartOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isCartOpen !== this.state.isCartOpen) {
+      if (this.state.isCartOpen) {
+        document.body.classList.add("overflow-hidden");
+      } else {
+        document.body.classList.remove("overflow-hidden");
+      }
     }
+  }
 
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [isCartOpen]);
+  componentWillUnmount() {
+    document.body.classList.remove("overflow-hidden");
+  }
 
-  return (
-    <Router>
-      <div>
-        <Header
-          toggleCart={toggleCart}
-          isCartOpen={isCartOpen}
-          itemCount={totalQuantity}
-        />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <ProductList
-                toggleCart={toggleCart}
-              />
-            }
-          />
-          <Route
-            path="/all"
-            element={
-              <ProductList
-                toggleCart={toggleCart}
-              />
-            }
-          />
-          <Route
-            path="/tech"
-            element={
-              <ProductList
-                toggleCart={toggleCart}
-              />
-            }
-          />
-          <Route
-            path="/clothes"
-            element={
-              <ProductList
-                toggleCart={toggleCart}
-              />
-            }
-          />
-          <Route
-            path="/product/:productId"
-            element={<ProductDetails toggleCart={toggleCart} />}
-          />
-        </Routes>
-        {isCartOpen && (
-          <Cart
-            toggleCart={toggleCart}
+  render() {
+    const { isCartOpen, totalQuantity } = this.state;
+
+    return (
+      <Router>
+        <div>
+          <Header
+            toggleCart={this.toggleCart}
             isCartOpen={isCartOpen}
-            setTotalQuantity={setTotalQuantity}
+            itemCount={totalQuantity}
           />
-        )}
-      </div>
-    </Router>
-  );
+          <Routes>
+            <Route
+              path="/"
+              element={<ProductList toggleCart={this.toggleCart} />}
+            />
+            <Route
+              path="/all"
+              element={<ProductList toggleCart={this.toggleCart} />}
+            />
+            <Route
+              path="/tech"
+              element={<ProductList toggleCart={this.toggleCart} />}
+            />
+            <Route
+              path="/clothes"
+              element={<ProductList toggleCart={this.toggleCart} />}
+            />
+            <Route
+              path="/product/:productId"
+              element={<ProductDetails toggleCart={this.toggleCart} />}
+            />
+          </Routes>
+          {isCartOpen && (
+            <Cart
+              toggleCart={this.toggleCart}
+              isCartOpen={isCartOpen}
+              setTotalQuantity={(quantity) =>
+                this.setState({ totalQuantity: quantity })
+              }
+            />
+          )}
+        </div>
+      </Router>
+    );
+  }
 }
 
 export default App;
